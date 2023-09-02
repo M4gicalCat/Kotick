@@ -2,10 +2,17 @@ import * as fs from 'fs';
 import * as path from 'path';
 import db from './db/config.js';
 import { Client, Collection, Events, GatewayIntentBits } from 'discord.js';
+import { authorize } from './calendar/index.js';
 
 // connect to db & setup env
 try {
-  await db.one('SELECT 1');
+  const { client } = await db.connect();
+  client.on('notification', async data => {
+    const payload = JSON.parse(data.payload);
+    console.log('echo payload', payload);
+  });
+  client.on('notice', console.warn);
+  await client.query('LISTEN meeting_reminders;LISTEN activity_reminders;');
   console.log('Connected to the database!');
 } catch (error) {
   console.error('Unable to connect to the database:', error);
@@ -76,3 +83,5 @@ for (const folder of commandFolders) {
     }
   }
 }
+
+authorize();
