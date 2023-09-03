@@ -1,50 +1,8 @@
-import { calendar_v3, google } from 'googleapis';
-import * as fs from 'fs';
-import { authenticate } from '@google-cloud/local-auth';
-import * as path from 'path';
+import { google } from 'googleapis';
+import client from './index.js';
 import db from '../db/config.js';
-let calendar: calendar_v3.Calendar;
 
-const SCOPES = [
-  'https://www.googleapis.com/auth/calendar',
-  'https://www.googleapis.com/auth/spreadsheets',
-  'https://www.googleapis.com/auth/drive',
-];
-const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
-
-function loadSavedCredentialsIfExist() {
-  try {
-    const credentials = JSON.parse(fs.readFileSync('./token.json').toString());
-    return google.auth.fromJSON(credentials);
-  } catch (e) {}
-}
-
-async function saveCredentials(client: any) {
-  const keys = JSON.parse(fs.readFileSync(CREDENTIALS_PATH).toString());
-  const key = keys.installed || keys.web;
-  const payload = JSON.stringify({
-    type: 'authorized_user',
-    client_id: key.client_id,
-    client_secret: key.client_secret,
-    refresh_token: client.credentials.refresh_token,
-  });
-  fs.writeFileSync('./token.json', payload);
-}
-export async function authorize() {
-  let client: any = await loadSavedCredentialsIfExist();
-  if (client) {
-    calendar = google.calendar({ version: 'v3', auth: client });
-    return;
-  }
-  client = await authenticate({
-    scopes: SCOPES,
-    keyfilePath: CREDENTIALS_PATH,
-  });
-  if (client.credentials) {
-    await saveCredentials(client);
-  }
-  calendar = google.calendar({ version: 'v3', auth: client });
-}
+const calendar = google.calendar({ version: 'v3', auth: client });
 
 export function listEvents(calendarId: string, limit: number) {
   return calendar.events.list({
@@ -100,7 +58,7 @@ export const removeCalendar = async (calendarId: string, guildId: string) => {
       [calendarId],
     );
     if (count === 1) {
-      // If this is the last guild using this calendar, delete it from google
+      // If this is the last guild using this google, delete it from google
       await calendar.calendarList
         .delete({
           calendarId,

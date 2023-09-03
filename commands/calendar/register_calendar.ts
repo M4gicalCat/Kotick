@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { addCalendar } from '../../calendar/index.js';
+import { addCalendar } from '../../google/calendar.js';
 import { ChatInputCommandInteraction } from 'discord.js';
 
 export default {

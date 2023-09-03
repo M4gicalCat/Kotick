@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import db from './db/config.js';
 import { Client, Collection, Events, GatewayIntentBits } from 'discord.js';
-import { authorize } from './calendar/index.js';
 
 // connect to db & setup env
 try {
@@ -83,5 +82,3 @@ for (const folder of commandFolders) {
     }
   }
 }
-
-authorize();

@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { listEvents } from '../../calendar/index.js';
+import { listEvents } from '../../google/calendar.js';
 import {
   ChatInputCommandInteraction,
   GuildScheduledEvent,

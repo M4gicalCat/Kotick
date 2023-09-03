@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS discord.guild_calendar (
     PRIMARY KEY (guild_id, calendar_id)
 );
 
+DROP TABLE IF EXISTS discord.guild_settings;
 CREATE TABLE IF NOT EXISTS discord.guild_settings (
     guild_id VARCHAR(20) NOT NULL,
     meeting_reminder INT DEFAULT 17,
@@ -13,6 +14,7 @@ CREATE TABLE IF NOT EXISTS discord.guild_settings (
     activity_reminder BOOLEAN NOT NULL DEFAULT TRUE,
     role_responsable VARCHAR(255) NOT NULL,
     role_enfant VARCHAR(255) NOT NULL,
+    drive_folder VARCHAR(255),
     PRIMARY KEY (guild_id)
 );
 
@@ -51,6 +53,14 @@ CREATE TABLE IF NOT EXISTS discord.event_user (
     PRIMARY KEY (event_id, user_id, guild_id),
     FOREIGN KEY (event_id, guild_id) REFERENCES discord.event (event_id, guild_id),
     FOREIGN KEY (user_id, guild_id) REFERENCES discord.user_name (id, guild_id)
+);
+
+CREATE TABLE IF NOT EXISTS discord.event_sheet (
+    event_id VARCHAR(255) NOT NULL,
+    sheet_id VARCHAR(255) NOT NULL,
+    guild_id VARCHAR(20) NOT NULL,
+    PRIMARY KEY (event_id, sheet_id, guild_id),
+    FOREIGN KEY (event_id, guild_id) REFERENCES discord.event (event_id, guild_id)
 );
 
 CREATE SCHEMA IF NOT EXISTS cron;
