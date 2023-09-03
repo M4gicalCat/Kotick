@@ -19,6 +19,9 @@ export default {
         .setRequired(true),
     ),
   async execute(interaction: any) {
+    await interaction.deferReply({
+      ephemeral: true,
+    });
     const guildId = interaction.guildId;
     const responsable = interaction.options.getRole('responsable');
     const enfant = interaction.options.getRole('enfant');
@@ -32,10 +35,9 @@ export default {
       [guildId, responsable.id, enfant.id],
     );
 
-    interaction.reply({
+    interaction.editReply({
       content:
         'Le serveur est configuré !\nUtilisez `/help` pour voir les commandes disponibles.',
-      ephemeral: true,
     });
   },
 };

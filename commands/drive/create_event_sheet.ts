@@ -51,15 +51,15 @@ export default {
       });
     }
 
-    const existingSheet = await db.oneOrNone(
+    const existingSheet = await db.oneOrNone<{ sheet_id: string }>(
       `
       SELECT sheet_id FROM discord.event WHERE event_id = $1 AND guild_id = $2`,
-      [eventId, interaction.guildId],
+      [googleEvent, interaction.guildId],
     );
     if (existingSheet) {
       return interaction.editReply({
-        content: `Une google sheet existe déjà pour cet événement : https://docs.google.com/spreadsheets/d/${existingSheet}
-        Utilisez \`/delete_event_sheet\` pour la supprimer`,
+        content: `Une google sheet existe déjà pour cet événement : https://docs.google.com/spreadsheets/d/${existingSheet.sheet_id}
+        Utilisez \`/delete_event_sheet\` si vous souhaiter la supprimer`,
       });
     }
 
@@ -90,7 +90,8 @@ export default {
     );
 
     await interaction.followUp({
-      content: `created sheet https://docs.google.com/spreadsheets/d/${sheetId}`,
+      content: `feuille créée : https://docs.google.com/spreadsheets/d/${sheetId}
+      N'oubliez pas d'utiliser \`/close_event_sheet\` pour terminer la préparation de l'événement une fois que la feuille est prête`,
     });
   },
 };

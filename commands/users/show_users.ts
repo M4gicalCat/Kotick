@@ -17,7 +17,7 @@ export default {
       [interaction.guildId],
     );
     const users = res.map((u: any) => `${u.name} : <@${u.id}>`).join('\n');
-    await interaction.followUp({
+    await interaction.editReply({
       content: `Voici la liste des responsables :\n${users}`,
     });
   },

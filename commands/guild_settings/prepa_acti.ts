@@ -14,16 +14,18 @@ export default {
         ),
     ),
   async execute(interaction: ChatInputCommandInteraction) {
+    await interaction.deferReply({
+      ephemeral: true,
+    });
     const jours = interaction.options.getInteger('jours');
     await db.none(
       `UPDATE discord.guild_settings SET meeting_reminder = $1 WHERE guild_id = $2`,
       [jours || null, interaction.guildId],
     );
-    interaction.reply({
+    interaction.editReply({
       content: !!jours
         ? `Les rappels de préparation sont maintenant activés ${jours} jours avant !`
         : `Les rappels de préparation sont maintenant désactivés !`,
-      ephemeral: true,
     });
   },
 };

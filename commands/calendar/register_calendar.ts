@@ -14,25 +14,24 @@ export default {
         .setRequired(true),
     ),
   async execute(interaction: ChatInputCommandInteraction) {
+    await interaction.deferReply({
+      ephemeral: true,
+    });
     const id = interaction.options.getString('calendar_id');
     if (!id) {
-      await interaction.reply({
+      await interaction.editReply({
         content: "Aucun identifiant n'a été spécifié.",
-        ephemeral: true,
-        flags: 64,
       });
       return;
     }
     try {
       await addCalendar(id!, interaction.guildId!);
-      await interaction.reply({
+      await interaction.editReply({
         content: `Le calendrier \`${id}\` est enregistré !`,
-        ephemeral: true,
       });
     } catch (e) {
-      await interaction.reply({
+      await interaction.editReply({
         content: `Une erreur s'est produite en enregistrant le calendrier \`${id}\` !\n${e}`,
-        ephemeral: true,
       });
     }
   },

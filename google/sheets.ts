@@ -9,11 +9,10 @@ export const populateSheet = async (
   guildId: string,
   update: (msg: string) => Promise<any>,
 ) => {
-  // echo todo : grille de journée ?
   const data = [
     ['Responsables', '', "Nom de l'activité", "Responsable sur l'activité"],
   ];
-  update('Création des données de la sheet...');
+  await update('Création des données de la feuille...');
   const responsables = await db.any(
     `
         SELECT un.name
@@ -52,16 +51,35 @@ export const populateSheet = async (
                 ],
               },
               strict: true,
-              showCustomUi: true,
+              showCustomUi: false,
             },
             range: {
               sheetId: 0,
               startRowIndex: 1,
               startColumnIndex: 3,
+              endColumnIndex: 6,
             },
           },
         },
       ],
     },
   });
+};
+
+export const getActivitiesFromSheet = async (sheetId: string) => {
+  const res = (
+    await drive.spreadsheets.values.get({
+      spreadsheetId: sheetId,
+      range: 'C2:G',
+    })
+  ).data;
+  const actis: { name: string; responsables: string[] }[] = [];
+  for (const row of res.values!) {
+    const [name, ...responsables] = row;
+    actis.push({
+      name,
+      responsables: [...new Set(responsables)],
+    });
+  }
+  return actis;
 };

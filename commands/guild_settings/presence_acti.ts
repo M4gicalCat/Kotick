@@ -14,16 +14,18 @@ export default {
         ),
     ),
   async execute(interaction: ChatInputCommandInteraction) {
+    await interaction.deferReply({
+      ephemeral: true,
+    });
     const jours = interaction.options.getInteger('jours');
     await db.none(
       `UPDATE discord.guild_settings SET activity_presence = $1 WHERE guild_id = $2`,
       [jours || null, interaction.guildId],
     );
-    interaction.reply({
+    interaction.editReply({
       content: !!jours
         ? `Les demandes de présence sont maintenant activées ${jours} jours avant !`
         : `Les demandes de présence sont maintenant désactivées !`,
-      ephemeral: true,
     });
   },
 };

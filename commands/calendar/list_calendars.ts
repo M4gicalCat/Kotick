@@ -8,6 +8,9 @@ export default {
     .setName('list_calendars')
     .setDescription('Liste tous les calendriers enregistrés.'),
   async execute(interaction: ChatInputCommandInteraction) {
+    await interaction.deferReply({
+      ephemeral: true,
+    });
     const calendars = await db.any(
       `
         SELECT calendar_id FROM discord.guild_calendar WHERE guild_id = $1
@@ -15,14 +18,12 @@ export default {
       [interaction.guildId],
     );
     if (!calendars?.length) {
-      await interaction.reply({
+      await interaction.editReply({
         content: "Aucun calendrier n'est enregistré.",
-        ephemeral: true,
-        flags: 64,
       });
       return;
     }
-    await interaction.reply({
+    await interaction.editReply({
       content: `${calendars.length} calendrier${
         calendars.length > 1 ? 's' : ''
       } enregistrés :\n${calendars.map(

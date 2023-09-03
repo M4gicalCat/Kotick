@@ -25,9 +25,8 @@ export default {
     const utilisateur = interaction.options.getUser('utilisateur');
 
     if (!nom || !utilisateur) {
-      return interaction.followUp({
+      return interaction.editReply({
         content: `Il faut préciser un nom et un utilisateur`,
-        ephemeral: true,
       });
     }
     await db.one(
@@ -38,7 +37,7 @@ export default {
     `,
       [utilisateur.id, nom, interaction.guildId],
     );
-    interaction.followUp({
+    interaction.editReply({
       content: `L'utilisateur ${utilisateur} est maintenant connu sous le nom de \`${nom}\``,
     });
   },

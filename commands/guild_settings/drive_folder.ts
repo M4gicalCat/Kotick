@@ -10,8 +10,10 @@ export default {
       o.setName('folder_id').setDescription('ID du dossier'),
     ),
   async execute(interaction: ChatInputCommandInteraction) {
+    await interaction.deferReply({
+      ephemeral: true,
+    });
     const folderId = interaction.options.getString('folder_id');
-    console.log('folderId', folderId, interaction.guildId);
     await db.one(
       `
       UPDATE discord.guild_settings
@@ -22,9 +24,8 @@ export default {
       [folderId || null, interaction.guildId],
     );
 
-    await interaction.reply({
+    await interaction.editReply({
       content: `Le dossier google drive est maintenant ${folderId}. Pensez à le partager avec \`bot.kotick@gmail.com\` !`,
-      ephemeral: true,
     });
   },
 };

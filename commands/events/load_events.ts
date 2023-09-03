@@ -20,6 +20,9 @@ export default {
         ),
     ),
   async execute(interaction: ChatInputCommandInteraction) {
+    await interaction.deferReply({
+      ephemeral: true,
+    });
     const limit = interaction.options.getInteger('limit') ?? 10;
     await db.task(async t => {
       const calendars = await t.any(
@@ -28,18 +31,23 @@ export default {
         [interaction.guildId],
       );
       if (!calendars?.length) {
-        await interaction.reply({
+        await interaction.editReply({
           content:
             "Aucun calendrier n'est enregistré. Utilisez `/register_calendar` pour en ajouter un.",
-          ephemeral: true,
         });
         return;
       }
+      await interaction.editReply({
+        content: `Chargement des événements discord`,
+      });
       const rest = new REST().setToken(process.env.CLIENT_TOKEN!);
       const guild_events = (await rest.get(
         `/guilds/${interaction.guildId}/scheduled-events`,
       )) as GuildScheduledEvent[];
 
+      await interaction.editReply({
+        content: `Chargement des événements google`,
+      });
       const promises = calendars.map<Promise<any>>(async ({ calendar_id }) => ({
         calendar_id,
         ...(await listEvents(calendar_id, limit)),
@@ -49,6 +57,9 @@ export default {
       googleCalendars = googleCalendars.filter(cal => cal.data?.items?.length);
       let total = 0;
       const errors = [];
+      await interaction.editReply({
+        content: `Mise à jour des événements discord`,
+      });
       for (const cal of googleCalendars) {
         const events = cal.data.items;
         total += events.length;
@@ -110,7 +121,7 @@ export default {
           }
         }
       }
-      await interaction.reply({
+      await interaction.editReply({
         content: `${total} événement(s) ont été chargés depuis ${
           calendars.length
         } calendrier${calendars.length > 1 ? 's' : ''}
@@ -122,7 +133,6 @@ export default {
             : ''
         }
         `,
-        ephemeral: true,
       });
     });
   },
