@@ -1,7 +1,7 @@
 import { google } from 'googleapis';
 import client from './index.js';
 import db from '../db/config.js';
-import { populateSheet } from './sheets';
+import { populateSheet } from './sheets.js';
 
 const drive = google.drive({ version: 'v3', auth: client });
 
@@ -10,6 +10,7 @@ export const createSheet = async (
   guildId: string,
   eventId: string,
   sheetName: string,
+  update: (msg: string) => Promise<any>,
 ) => {
   const res = await drive.files.create({
     requestBody: {
@@ -20,12 +21,13 @@ export const createSheet = async (
   });
 
   await db.none(
-    `INSERT INTO discord.event_sheet (event_id, sheet_id, guild_id) VALUES ($1, $2, $3)`,
+    `UPDATE discord.event SET sheet_id = $2 WHERE event_id = $1 AND guild_id = $3`,
     [eventId, res.data.id, guildId],
   );
 
-  await populateSheet(res.data.id!, guildId);
+  await populateSheet(res.data.id!, guildId, update);
 
+  await update('Partage de la feuille...');
   await drive.permissions.create({
     fileId: res.data.id!,
     requestBody: {

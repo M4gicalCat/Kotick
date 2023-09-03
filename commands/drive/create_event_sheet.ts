@@ -26,9 +26,8 @@ export default {
     });
     const eventId = parse_event(interaction.options.getString('event_link')!);
     if (!eventId) {
-      return interaction.followUp({
+      return interaction.editReply({
         content: `L'événement n'existe pas`,
-        ephemeral: true,
       });
     }
     await interaction.editReply({
@@ -36,9 +35,8 @@ export default {
     });
     const event = await interaction.guild!.scheduledEvents.fetch(eventId);
     if (!event) {
-      return interaction.followUp({
+      return interaction.editReply({
         content: `L'événement n'existe pas`,
-        ephemeral: true,
       });
     }
     const sheet_name =
@@ -48,22 +46,20 @@ export default {
       .description!.match(/kotick@\w*/)?.[0]
       .split('@')[1];
     if (!googleEvent) {
-      return interaction.followUp({
+      return interaction.editReply({
         content: `L'événement n'est pas relié à un événement google`,
-        ephemeral: true,
       });
     }
 
     const existingSheet = await db.oneOrNone(
       `
-      SELECT sheet_id FROM discord.event_sheet WHERE event_id = $1 AND guild_id = $2`,
+      SELECT sheet_id FROM discord.event WHERE event_id = $1 AND guild_id = $2`,
       [eventId, interaction.guildId],
     );
     if (existingSheet) {
-      return interaction.followUp({
+      return interaction.editReply({
         content: `Une google sheet existe déjà pour cet événement : https://docs.google.com/spreadsheets/d/${existingSheet}
         Utilisez \`/delete_event_sheet\` pour la supprimer`,
-        ephemeral: true,
       });
     }
 
@@ -73,9 +69,8 @@ export default {
         [interaction.guildId],
       )) ?? {};
     if (!folderId) {
-      return interaction.followUp({
+      return interaction.editReply({
         content: `Aucun dossier google drive n'est enregistré pour ce serveur. Utilisez \`/drive_folder\` pour en ajouter un.`,
-        ephemeral: true,
       });
     }
 
@@ -88,6 +83,10 @@ export default {
       interaction.guildId!,
       googleEvent,
       sheet_name,
+      (msg: string) =>
+        interaction.editReply({
+          content: msg,
+        }),
     );
 
     await interaction.followUp({
