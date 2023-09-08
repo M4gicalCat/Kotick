@@ -2,21 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import db from './db/config.js';
 import { Client, Collection, Events, GatewayIntentBits } from 'discord.js';
-
-// connect to db & setup env
-try {
-  const { client } = await db.connect();
-  client.on('notification', async data => {
-    const payload = JSON.parse(data.payload);
-    console.log('echo payload', payload);
-  });
-  client.on('notice', console.warn);
-  await client.query('LISTEN meeting_reminders;LISTEN activity_reminders;');
-  console.log('Connected to the database!');
-} catch (error) {
-  console.error('Unable to connect to the database:', error);
-  process.exit(1);
-}
+import { onNotify } from './db/notifies/index.js';
 
 type CustomClient = Client & { commands: Collection<string, any> };
 
@@ -81,4 +67,16 @@ for (const folder of commandFolders) {
       );
     }
   }
+}
+
+// connect to db & setup env
+try {
+  const { client: pgClient } = await db.connect();
+  pgClient.on('notification', data => onNotify(data, client));
+  pgClient.on('notice', console.warn);
+  await pgClient.query('LISTEN reminders');
+  console.log('Connected to the database!');
+} catch (error) {
+  console.error('Unable to connect to the database:', error);
+  process.exit(1);
 }

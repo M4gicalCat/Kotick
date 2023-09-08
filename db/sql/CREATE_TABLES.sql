@@ -15,6 +15,8 @@ CREATE TABLE IF NOT EXISTS discord.guild_settings (
     role_responsable VARCHAR(255) NOT NULL,
     role_enfant VARCHAR(255) NOT NULL,
     drive_folder VARCHAR(255),
+    meeting_reminders_channel VARCHAR(255),
+    activity_reminders_channel VARCHAR(255),
     PRIMARY KEY (guild_id)
 );
 
@@ -25,6 +27,7 @@ CREATE TABLE IF NOT EXISTS discord.event (
     title TEXT NOT NULL,
     start_time TIMESTAMP NOT NULL,
     end_time TIMESTAMP NOT NULL,
+    meeting_time TIMESTAMP,
     meeting_done BOOLEAN NOT NULL DEFAULT FALSE,
     activity_reminder_done BOOLEAN NOT NULL DEFAULT FALSE,
     sheet_id VARCHAR(255),

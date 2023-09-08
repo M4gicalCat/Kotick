@@ -37,6 +37,7 @@ export default {
     const googleEvent = event
       .description!.match(/kotick@\w*/)?.[0]
       .split('@')[1];
+    console.log(googleEvent, interaction.guildId);
     const { sheet_id } =
       (await db.oneOrNone(
         `

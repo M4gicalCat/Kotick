@@ -53,7 +53,7 @@ export default {
 
     const existingSheet = await db.oneOrNone<{ sheet_id: string }>(
       `
-      SELECT sheet_id FROM discord.event WHERE event_id = $1 AND guild_id = $2`,
+      SELECT sheet_id FROM discord.event WHERE event_id = $1 AND guild_id = $2 AND sheet_id IS NOT NULL`,
       [googleEvent, interaction.guildId],
     );
     if (existingSheet) {
