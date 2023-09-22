@@ -1,6 +1,6 @@
 env/.private.env
 node_modules/
 .idea
-out/
+
 credentials.json
 token.json
