@@ -2,10 +2,16 @@ import db from '../config.js';
 import { Client, EmbedBuilder, TextChannel } from 'discord.js';
 
 interface IReminders {
-  meeting?: string[];
-  presence?: string[];
-  event?: string[];
+  meeting?: { event: string; guild: string }[];
+  presence?: { event: string; guild: string }[];
+  event?: { event: string; guild: string }[];
   activity?: { event_id: string; activity_name: string; guild_id: string }[];
+  activity_meeting?: {
+    event_id: string;
+    activity_name: string;
+    guild_id: string;
+  }[];
+  meeting_today?: { event: string; guild: string }[];
 }
 
 const getcolor = (percentage: number) => {
@@ -17,25 +23,25 @@ const getcolor = (percentage: number) => {
 export const onReminders = async (data: IReminders, client: Client) =>
   db.task(async t => {
     if (data.meeting?.length) {
-      const meeting_reminders = await t.many<{
-        channel: string;
-        role: string;
-        title: string;
-        percentage: number;
-      }>(
-        `
-        SELECT
+      for (const meeting of data.meeting) {
+        const reminder = await t.one<{
+          channel: string;
+          role: string;
+          title: string;
+          percentage: number;
+        }>(
+          `
+          SELECT
           gs.meeting_reminders_channel as channel,
           gs.role_responsable as role,
           (e.start_time::date - CURRENT_DATE)::float / gs.meeting_reminder as percentage,
           e.title
         FROM discord.event e
         JOIN discord.guild_settings gs ON gs.guild_id = e.guild_id
-        WHERE e.event_id IN ($1:csv)
+        WHERE e.event_id = $1 AND e.guild_id = $2
         `,
-        [data.meeting],
-      );
-      for (const reminder of meeting_reminders) {
+          [meeting.event, meeting.guild],
+        );
         const channel = client.channels.cache.get(reminder.channel);
         if (!channel) continue;
         const message = new EmbedBuilder()
@@ -92,7 +98,58 @@ export const onReminders = async (data: IReminders, client: Client) =>
           .setColor(getcolor(percentage))
           .addFields({
             name: 'Étape suivante',
+            value: `Après avoir créé l'activité, utilisez \`/activite\` pour la marquer comme terminée.`,
+          })
+          .setFooter({
+            text: 'Rappel automatique de Kotick',
+            iconURL:
+              'https://cdn.discordapp.com/app-icons/1146507687291531349/d9aa1f23d1ce85e9fa36a58a5021f61f.png?size=4096',
+          });
+        (channel_obj as TextChannel)
+          .send({
+            content: names.map(n => `<@${n}>`).join(', '),
+            embeds: [message],
+          })
+          .then(() => {});
+      }
+    }
+    if (data.activity_meeting?.length) {
+      for (const acti of data.activity_meeting) {
+        const { channel, title, names } = await t.one<{
+          channel: string;
+          title: string;
+          names: string[];
+        }>(
+          `
+        SELECT
+          gs.meeting_reminders_channel as channel,
+          array_agg(eu.user_id) as names,
+          ea.meeting_time as time,
+          e.title
+        FROM discord.event e
+        JOIN discord.guild_settings gs ON gs.guild_id = e.guild_id
+        JOIN discord.event_activity ea on e.event_id = ea.event_id and e.guild_id = ea.guild_id
+        LEFT JOIN discord.event_user eu on ea.event_id = eu.event_id and ea.activity_name = eu.activity_name and ea.guild_id = eu.guild_id
+        WHERE e.event_id = $1 and e.guild_id = $2 AND ea.activity_name = $3
+        GROUP BY e.event_id, e.start_time, e.end_time, gs.meeting_reminders_channel, gs.role_responsable, gs.meeting_reminder, e.title
+        `,
+          [acti.event_id, acti.guild_id, acti.activity_name],
+        );
+        const channel_obj = client.channels.cache.get(channel);
+        if (!channel_obj) continue;
+        const message = new EmbedBuilder()
+          .setTitle(`Rappel de réunion d'activité`)
+          .setDescription(
+            `Ajourd'hui, vous préparez **${acti.activity_name}** pour **${title}**`,
+          )
+          .addFields({
+            name: 'Étape suivante',
             value: `Une fois que vous avez créé l'activité, utilisez \`/activite\` pour la marquer comme terminée.`,
+          })
+          .setFooter({
+            text: 'Rappel automatique de Kotick',
+            iconURL:
+              'https://cdn.discordapp.com/app-icons/1146507687291531349/d9aa1f23d1ce85e9fa36a58a5021f61f.png?size=4096',
           });
         (channel_obj as TextChannel)
           .send({
@@ -103,14 +160,15 @@ export const onReminders = async (data: IReminders, client: Client) =>
       }
     }
     if (data.presence?.length) {
-      const event_reminders = await t.many<{
-        channel: string;
-        role: string;
-        title: string;
-        start: number;
-        end: number;
-      }>(
-        `
+      for (const presence of data.presence) {
+        const reminder = await t.one<{
+          channel: string;
+          role: string;
+          title: string;
+          start: number;
+          end: number;
+        }>(
+          `
         SELECT
           gs.activity_reminders_channel as channel,
           gs.role_enfant as role,
@@ -119,11 +177,10 @@ export const onReminders = async (data: IReminders, client: Client) =>
           e.title
         FROM discord.event e
         JOIN discord.guild_settings gs ON gs.guild_id = e.guild_id
-        WHERE e.event_id IN ($1:csv)
+        WHERE e.event_id = $1 AND e.guild_id = $2
         `,
-        [data.presence],
-      );
-      for (const reminder of event_reminders) {
+          [presence.event, presence.guild],
+        );
         const channel = client.channels.cache.get(reminder.channel);
         if (!channel) continue;
         const embed = new EmbedBuilder()
@@ -153,14 +210,15 @@ export const onReminders = async (data: IReminders, client: Client) =>
       }
     }
     if (data.event?.length) {
-      const event_reminders = await t.many<{
-        channel: string;
-        role: string;
-        title: string;
-        start: number;
-        end: number;
-      }>(
-        `
+      for (const event of data.event) {
+        const reminder = await t.one<{
+          channel: string;
+          role: string;
+          title: string;
+          start: number;
+          end: number;
+        }>(
+          `
         SELECT
           gs.activity_reminders_channel as channel,
           gs.role_enfant as role,
@@ -169,11 +227,10 @@ export const onReminders = async (data: IReminders, client: Client) =>
           e.title
         FROM discord.event e
         JOIN discord.guild_settings gs ON gs.guild_id = e.guild_id
-        WHERE e.event_id IN ($1:csv)
+        WHERE e.event_id = $1 AND e.guild_id = $2
         `,
-        [data.event],
-      );
-      for (const reminder of event_reminders) {
+          [event.event, event.guild],
+        );
         const channel = client.channels.cache.get(reminder.channel);
         if (!channel) continue;
         const embed = new EmbedBuilder()
@@ -190,6 +247,49 @@ export const onReminders = async (data: IReminders, client: Client) =>
               value: ` <t:${Math.floor(reminder.end)}>`,
               inline: true,
             },
+          )
+          .setFooter({
+            text: 'Rappel automatique de Kotick',
+            iconURL:
+              'https://cdn.discordapp.com/app-icons/1146507687291531349/d9aa1f23d1ce85e9fa36a58a5021f61f.png?size=4096',
+          });
+        (async () => {
+          const message = await (channel as TextChannel).send({
+            content: `<@&${reminder.role}>`,
+            embeds: [embed],
+          });
+        })().then(() => {});
+      }
+    }
+    if (data.meeting_today?.length) {
+      for (const event of data.meeting_today) {
+        const reminder = await t.one<{
+          channel: string;
+          role: string;
+          title: string;
+          start: number;
+          end: number;
+        }>(
+          `
+        SELECT
+          gs.meeting_reminders_channel as channel,
+          gs.role_responsable as role,
+          extract(epoch from e.meeting_time) as start,
+          e.title
+        FROM discord.event e
+        JOIN discord.guild_settings gs ON gs.guild_id = e.guild_id
+        WHERE e.event_id = $1 AND e.guild_id = $2
+        `,
+          [event.event, event.guild],
+        );
+        const channel = client.channels.cache.get(reminder.channel);
+        if (!channel) continue;
+        const embed = new EmbedBuilder()
+          .setTitle(`Rappel de réunion !`)
+          .setDescription(
+            `La réunion de préparation de **${
+              reminder.title
+            }** aura lieu à <t:${Math.floor(reminder.start)}>`,
           )
           .setFooter({
             text: 'Rappel automatique de Kotick',

@@ -1,4 +1,5 @@
 CREATE SCHEMA IF NOT EXISTS discord;
+CREATE SCHEMA IF NOT EXISTS cron;
 
 CREATE TABLE IF NOT EXISTS discord.guild_calendar (
     guild_id VARCHAR(20) NOT NULL,
@@ -39,6 +40,7 @@ CREATE TABLE IF NOT EXISTS discord.event_activity (
     activity_name VARCHAR(255) NOT NULL,
     guild_id VARCHAR(20) NOT NULL,
     done BOOLEAN NOT NULL DEFAULT FALSE,
+    meeting_time TIMESTAMP,
     PRIMARY KEY (event_id, activity_name, guild_id),
     FOREIGN KEY (event_id, guild_id) REFERENCES discord.event (event_id, guild_id)
 );
@@ -62,5 +64,3 @@ CREATE TABLE IF NOT EXISTS discord.event_user (
     FOREIGN KEY (user_id, guild_id) REFERENCES discord.user_name (id, guild_id),
     FOREIGN KEY (event_id, activity_name, guild_id) REFERENCES discord.event_activity (event_id, activity_name, guild_id)
 );
-
-CREATE SCHEMA IF NOT EXISTS cron;
