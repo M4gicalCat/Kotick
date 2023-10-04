@@ -3,6 +3,7 @@ import * as path from 'path';
 import db from './db/config.js';
 import { Client, Collection, Events, GatewayIntentBits } from 'discord.js';
 import { onNotify } from './db/notifies/index.js';
+import { createCommands } from './register-commands.js';
 
 type CustomClient = Client & { commands: Collection<string, any> };
 
@@ -13,6 +14,8 @@ const client = new Client({
 client.once(Events.ClientReady, c => {
   console.log(`Logged in as ${c.user?.tag}!`);
 });
+
+client.on(Events.GuildCreate, async guild => createCommands(guild.id));
 
 client.on(Events.InteractionCreate, async interaction => {
   if (!interaction.isChatInputCommand()) return;

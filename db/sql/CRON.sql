@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION cron.reminders() RETURNS VOID AS
+CREATE OR REPLACE FUNCTION kotick_cron.reminders() RETURNS VOID AS
 $$
 DECLARE
     l_meeting_events  JSONB[];
@@ -94,5 +94,3 @@ BEGIN
     );
 END;
 $$ LANGUAGE plpgsql;
-
-SELECT cron.reminders();

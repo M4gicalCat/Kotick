@@ -4,3 +4,4 @@ node_modules/
 out/
 credentials.json
 token.json
+db/notifies/.pgpass

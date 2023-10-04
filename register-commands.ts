@@ -6,7 +6,7 @@ import * as path from 'path';
 dotenv.config({ path: './env/.private.env' });
 dotenv.config({ path: './env/.env' });
 
-const commands = [];
+const commands: any[] = [];
 // Grab all the command files from the commands directory you created earlier
 const foldersPath = path.join(process.env.PWD!, 'out/commands');
 const commandFolders = fs.readdirSync(foldersPath);
@@ -35,7 +35,7 @@ for (const folder of commandFolders) {
 const rest = new REST().setToken(process.env.CLIENT_TOKEN!);
 
 // and deploy your commands!
-(async () => {
+export const createCommands = async (guildId: string) => {
   try {
     console.log(
       `Started refreshing ${commands.length} application (/) commands.`,
@@ -45,7 +45,7 @@ const rest = new REST().setToken(process.env.CLIENT_TOKEN!);
     const data = (await rest.put(
       Routes.applicationGuildCommands(
         process.env.COMMANDS_REGISTRATION_CLIENT_ID!,
-        process.env.COMMANDS_REGISTRATION_GUILD_ID!,
+        guildId,
       ),
       { body: commands },
     )) as any[];
@@ -57,4 +57,4 @@ const rest = new REST().setToken(process.env.CLIENT_TOKEN!);
     // And of course, make sure you catch and log any errors!
     console.error(error);
   }
-})();
+};

@@ -1,11 +1,6 @@
-Ajouter un drive à la guilde => le partager au bot
+Ajouter folklore à une acti depuis la sheet
+-> col. avant, pendant, après
 
-une commande pour crééer une sheet spécifique au drive et à la guilde
--> ajouter les infos de l'event ?
+=>>> possibilité de modifier une sheet et d'en prendre les modifications en compte
 
-lier en bdd l'id de la sheet à l'event
--> essayer de pouvoir tout faire avec l'id de l'evt discord
-
-choper les actis dans la sheet, les mettre dans la bdd
-
-ajouter notifications aux responsables des actis
+appeler la db depuis un cron
