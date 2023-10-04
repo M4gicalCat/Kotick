@@ -29,15 +29,15 @@ for (const folder of commandFolders) {
 // Construct and prepare an instance of the REST module
 const rest = new REST().setToken(process.env.CLIENT_TOKEN);
 // and deploy your commands!
-(async () => {
+export const createCommands = async (guildId) => {
     try {
         console.log(`Started refreshing ${commands.length} application (/) commands.`);
         // The put method is used to fully refresh all commands in the guild with the current set
-        const data = (await rest.put(Routes.applicationGuildCommands(process.env.COMMANDS_REGISTRATION_CLIENT_ID, process.env.COMMANDS_REGISTRATION_GUILD_ID), { body: commands }));
+        const data = (await rest.put(Routes.applicationGuildCommands(process.env.COMMANDS_REGISTRATION_CLIENT_ID, guildId), { body: commands }));
         console.log(`Successfully reloaded ${data.length} application (/) commands.`);
     }
     catch (error) {
         // And of course, make sure you catch and log any errors!
         console.error(error);
     }
-})();
+};

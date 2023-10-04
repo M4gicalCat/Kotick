@@ -23,8 +23,7 @@ export const addCalendar = async (calendarId, guildId) => {
                 id: calendarId,
             },
         })
-            .catch(e => {
-            console.error(e);
+            .catch(() => {
             throw new Error("Une erreur s'est produite en enregistrant le calendrier. Vérifiez qu'il soit partagé avec `bot.kotick@gmail.com`");
         });
         await t.none('INSERT INTO discord.guild_calendar (guild_id, calendar_id) VALUES ($1, $2)', [guildId, calendarId]);
