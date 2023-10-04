@@ -1,5 +1,5 @@
 CREATE SCHEMA IF NOT EXISTS discord;
-CREATE SCHEMA IF NOT EXISTS cron;
+CREATE SCHEMA IF NOT EXISTS kotick_cron;
 
 CREATE TABLE IF NOT EXISTS discord.guild_calendar (
     guild_id VARCHAR(20) NOT NULL,
