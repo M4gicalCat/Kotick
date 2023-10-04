@@ -1,1 +1,1 @@
-psql -d kotick -U kotick -w -c 'SELECT * FROM kotick_cron.reminders();'
+PGPASSWORD=$(cat .pgpass) psql -d kotick -U kotick -w -c 'SELECT * FROM kotick_cron.reminders();'
