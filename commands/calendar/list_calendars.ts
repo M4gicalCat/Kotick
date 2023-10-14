@@ -1,12 +1,14 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { ChatInputCommandInteraction } from 'discord.js';
 import db from '../../db/config.js';
+import { check_res } from '../../utils/check_res';
+import { PERM } from '../../utils/permissions.js';
 
 export default {
   data: new SlashCommandBuilder()
-    .setDefaultMemberPermissions(0)
     .setName('list_calendars')
     .setDescription('Liste tous les calendriers enregistrés.'),
+  perms: PERM.RESPONSABLE,
   async execute(interaction: ChatInputCommandInteraction) {
     await interaction.deferReply({
       ephemeral: true,

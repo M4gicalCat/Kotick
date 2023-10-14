@@ -3,6 +3,7 @@ import { ChatInputCommandInteraction } from 'discord.js';
 import parse_event from '../../utils/parse_event.js';
 import db, { pgp } from '../../db/config.js';
 import { getActivitiesFromSheet } from '../../google/sheets.js';
+import { PERM } from '../../utils/permissions.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -16,6 +17,7 @@ export default {
         .setDescription("Lien de l'événement discord")
         .setRequired(true),
     ),
+  perms: PERM.RESPONSABLE,
   async execute(interaction: ChatInputCommandInteraction) {
     await interaction.deferReply({
       ephemeral: true,
