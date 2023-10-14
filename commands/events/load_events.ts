@@ -6,6 +6,7 @@ import {
   REST,
 } from 'discord.js';
 import db from '../../db/config.js';
+import { PERM } from '../../utils/permissions.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -19,6 +20,7 @@ export default {
           "Nombre d'événements à charger par calendrier (10 par défaut).",
         ),
     ),
+  perms: PERM.RESPONSABLE,
   async execute(interaction: ChatInputCommandInteraction) {
     await interaction.deferReply({
       ephemeral: true,

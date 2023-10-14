@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { addCalendar } from '../../google/calendar.js';
 import { ChatInputCommandInteraction } from 'discord.js';
+import { PERM } from '../../utils/permissions.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -13,6 +14,7 @@ export default {
         .setDescription("L'id du calendrier à enregistrer.")
         .setRequired(true),
     ),
+  perms: PERM.RESPONSABLE,
   async execute(interaction: ChatInputCommandInteraction) {
     await interaction.deferReply({
       ephemeral: true,

@@ -4,6 +4,8 @@ import db from './db/config.js';
 import { Client, Collection, Events, GatewayIntentBits } from 'discord.js';
 import { onNotify } from './db/notifies/index.js';
 import { createCommands } from './register-commands.js';
+import { PERM } from './utils/permissions.js';
+import { check_res } from './utils/check_res.js';
 
 type CustomClient = Client & { commands: Collection<string, any> };
 
@@ -29,17 +31,25 @@ client.on(Events.InteractionCreate, async interaction => {
     );
   }
   try {
+    switch (command.perms) {
+      case PERM.RESPONSABLE:
+        await check_res(interaction);
+        break;
+    }
     await command.execute(interaction);
   } catch (error) {
+    if ((error as Error).message === '403') return;
     console.error(error);
     if (interaction.replied || interaction.deferred) {
       await interaction.followUp({
-        content: 'There was an error while executing this command!',
+        content:
+          "Aïe, on dirait que je n'ai pas réussi à exécuter ta commande.",
         ephemeral: true,
       });
     } else {
       await interaction.reply({
-        content: 'There was an error while executing this command!',
+        content:
+          "Aïe, on dirait que je n'ai pas réussi à exécuter ta commande.",
         ephemeral: true,
       });
     }

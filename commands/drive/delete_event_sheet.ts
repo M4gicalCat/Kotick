@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import { ChatInputCommandInteraction } from 'discord.js';
 import parse_event from '../../utils/parse_event.js';
 import db from '../../db/config.js';
+import { PERM } from '../../utils/permissions.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -13,6 +14,7 @@ export default {
         .setDescription("Lien de l'événement discord")
         .setRequired(true),
     ),
+  perms: PERM.RESPONSABLE,
   async execute(interaction: ChatInputCommandInteraction) {
     const event = parse_event(interaction.options.getString('event_link')!);
     if (!event) {

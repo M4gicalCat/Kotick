@@ -3,6 +3,7 @@ import { ChatInputCommandInteraction } from 'discord.js';
 import db from '../../db/config.js';
 import { createSheet } from '../../google/drive.js';
 import parse_event from '../../utils/parse_event.js';
+import { PERM } from '../../utils/permissions.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -20,6 +21,7 @@ export default {
         .setDescription('Nom de la google sheet')
         .setRequired(false),
     ),
+  perms: PERM.RESPONSABLE,
   async execute(interaction: ChatInputCommandInteraction) {
     await interaction.deferReply({
       ephemeral: true,
