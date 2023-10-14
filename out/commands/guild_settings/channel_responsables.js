@@ -1,9 +1,11 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import db from '../../db/config.js';
+import { PERM } from '../../utils/permissions.js';
 export default {
     data: new SlashCommandBuilder()
         .setName('channel_responsables')
         .setDescription('Enregistre le channel actuel comme channel des responsables'),
+    perms: PERM.RESPONSABLE,
     async execute(interaction) {
         await interaction.deferReply({
             ephemeral: true,

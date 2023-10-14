@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import parse_event from '../../utils/parse_event.js';
 import db, { pgp } from '../../db/config.js';
 import { getActivitiesFromSheet } from '../../google/sheets.js';
+import { PERM } from '../../utils/permissions.js';
 export default {
     data: new SlashCommandBuilder()
         .setName('close_event_sheet')
@@ -10,6 +11,7 @@ export default {
         .setName('event_link')
         .setDescription("Lien de l'événement discord")
         .setRequired(true)),
+    perms: PERM.RESPONSABLE,
     async execute(interaction) {
         var _a, _b;
         await interaction.deferReply({

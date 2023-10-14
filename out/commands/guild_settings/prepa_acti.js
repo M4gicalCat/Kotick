@@ -1,5 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import db from '../../db/config.js';
+import { PERM } from '../../utils/permissions.js';
 export default {
     data: new SlashCommandBuilder()
         .setName('prepa_acti')
@@ -7,6 +8,7 @@ export default {
         .addIntegerOption(o => o
         .setName('jours')
         .setDescription("Nombre de jours avant l'activité (Ne pas remplir pour désactiver)")),
+    perms: PERM.RESPONSABLE,
     async execute(interaction) {
         await interaction.deferReply({
             ephemeral: true,

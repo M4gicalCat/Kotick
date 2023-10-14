@@ -1,10 +1,12 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import db from '../../db/config.js';
+import { PERM } from '../../utils/permissions.js';
 export default {
     data: new SlashCommandBuilder()
         .setName('drive_folder')
         .setDescription('Paramètre le dossier google drive pour le serveur')
         .addStringOption(o => o.setName('folder_id').setDescription('ID du dossier')),
+    perms: PERM.RESPONSABLE,
     async execute(interaction) {
         await interaction.deferReply({
             ephemeral: true,

@@ -1,10 +1,12 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import db from '../../db/config.js';
+import { PERM } from '../../utils/permissions.js';
 export default {
     data: new SlashCommandBuilder()
         .setName('rappel_acti')
         .setDescription("Envoyer un rappel le jour même de l'activité")
         .addBooleanOption(o => o.setName('activer').setDescription('Activer ou désactiver les rappels')),
+    perms: PERM.RESPONSABLE,
     async execute(interaction) {
         await interaction.deferReply({
             ephemeral: true,

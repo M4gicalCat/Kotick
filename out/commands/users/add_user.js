@@ -1,5 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import db from '../../db/config.js';
+import { PERM } from '../../utils/permissions.js';
 export default {
     data: new SlashCommandBuilder()
         .setName('add_user')
@@ -9,6 +10,7 @@ export default {
         .setName('utilisateur')
         .setDescription("Compte discord de l'utilisateur")
         .setRequired(true)),
+    perms: PERM.RESPONSABLE,
     async execute(interaction) {
         await interaction.deferReply({
             ephemeral: true,

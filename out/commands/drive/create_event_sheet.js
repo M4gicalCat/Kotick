@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import db from '../../db/config.js';
 import { createSheet } from '../../google/drive.js';
 import parse_event from '../../utils/parse_event.js';
+import { PERM } from '../../utils/permissions.js';
 export default {
     data: new SlashCommandBuilder()
         .setName('create_event_sheet')
@@ -14,6 +15,7 @@ export default {
         .setName('sheet_name')
         .setDescription('Nom de la google sheet')
         .setRequired(false)),
+    perms: PERM.RESPONSABLE,
     async execute(interaction) {
         var _a, _b, _c;
         await interaction.deferReply({

@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import { listEvents } from '../../google/calendar.js';
 import { REST, } from 'discord.js';
 import db from '../../db/config.js';
+import { PERM } from '../../utils/permissions.js';
 export default {
     data: new SlashCommandBuilder()
         .setDefaultMemberPermissions(0)
@@ -10,6 +11,7 @@ export default {
         .addIntegerOption(option => option
         .setName('limit')
         .setDescription("Nombre d'événements à charger par calendrier (10 par défaut).")),
+    perms: PERM.RESPONSABLE,
     async execute(interaction) {
         var _a;
         await interaction.deferReply({

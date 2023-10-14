@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import parse_event from '../../utils/parse_event.js';
 import db from '../../db/config.js';
+import { PERM } from '../../utils/permissions.js';
 export default {
     data: new SlashCommandBuilder()
         .setName('delete_event_sheet')
@@ -9,6 +10,7 @@ export default {
         .setName('event_link')
         .setDescription("Lien de l'événement discord")
         .setRequired(true)),
+    perms: PERM.RESPONSABLE,
     async execute(interaction) {
         var _a;
         const event = parse_event(interaction.options.getString('event_link'));

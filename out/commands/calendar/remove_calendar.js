@@ -1,5 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { removeCalendar } from '../../google/calendar.js';
+import { PERM } from '../../utils/permissions.js';
 export default {
     data: new SlashCommandBuilder()
         .setDefaultMemberPermissions(0)
@@ -9,6 +10,7 @@ export default {
         .setName('calendar_id')
         .setDescription("L'id du calendrier à supprimer.")
         .setRequired(true)),
+    perms: PERM.RESPONSABLE,
     async execute(interaction) {
         await interaction.deferReply({
             ephemeral: true,
