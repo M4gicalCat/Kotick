@@ -19,7 +19,6 @@ export default {
         .setDescription('Rôle représentant un enfant')
         .setRequired(true),
     ),
-  perms: PERM.RESPONSABLE,
   async execute(interaction: any) {
     await interaction.deferReply({
       ephemeral: true,
