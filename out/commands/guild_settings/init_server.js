@@ -1,6 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import db from '../../db/config.js';
-import { PERM } from '../../utils/permissions.js';
 export default {
     data: new SlashCommandBuilder()
         .setDefaultMemberPermissions(0)
@@ -14,7 +13,6 @@ export default {
         .setName('enfant')
         .setDescription('Rôle représentant un enfant')
         .setRequired(true)),
-    perms: PERM.RESPONSABLE,
     async execute(interaction) {
         await interaction.deferReply({
             ephemeral: true,
